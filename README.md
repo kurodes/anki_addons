@@ -13,3 +13,5 @@ Render markdown syntax using `showdown.js` with no content convert.
 
 ## Card Type
 Add front_template, back_tmplate and styling to card types.
+
+## Preview
