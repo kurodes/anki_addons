@@ -1,6 +1,9 @@
 /* Implement counters and numbering for h2-h6 titles */
-
 body {
+  font-family: "Fira Code";
+}
+
+h1 {
   counter-reset: h2;
 }
 
