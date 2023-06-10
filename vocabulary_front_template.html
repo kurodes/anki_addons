@@ -1,0 +1,46 @@
+<div class="word">{{Front}}</div>
+
+<button id="getGpt3">Sentence</button>
+
+<script>
+    async function getGpt3Response() {
+        const prompt = 'Please generate a sentence for the word: {{Front}}';
+        // reference: https://platform.openai.com/docs/api-reference/chat
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer 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'
+            },
+            body: JSON.stringify({
+                "model": "gpt-3.5-turbo",
+                "messages": [{"role": "user", "content": prompt}]
+            })
+        });
+        const data = await response.json();
+        return data.choices[0].message.content;
+    }
+
+    // getGpt3Response().then(response => {
+    //     console.log(response);
+    // });
+
+
+    document.getElementById('getGpt3').addEventListener('click', async () => {
+        document.querySelectorAll('div.word').forEach(async (div) => {
+            var rawText = div.innerText;
+            var gpt3Response = await getGpt3Response(rawText);
+            // rawText += '\n\n' + "gpt3Response";
+            rawText += '\n\n' + gpt3Response;
+            div.innerText = rawText;
+        });
+    }); 
+
+    document.querySelectorAll('div.word').forEach(async (div) => {
+        var rawText = div.innerText;
+        var gpt3Response = await getGpt3Response(rawText);
+        // rawText += '\n\n' + "gpt3Response";
+        rawText += '\n\n' + gpt3Response;
+        div.innerText = rawText;
+    });
+</script>
