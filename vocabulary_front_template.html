@@ -1,46 +1,64 @@
-<div class="word">{{Front}}</div>
+<div id="word" style="margin-bottom: 30px;">{{Front}}</div>
 
-<button id="getGpt3">Sentence</button>
+<div id="sentences" style="margin-bottom: 30px;"></div>
+
+<div>
+  <button id="button" style="width: 80vw; height: 50px;">
+    Show Translation
+  </button>
+</div>
 
 <script>
-    async function getGpt3Response() {
-        const prompt = 'Please generate a sentence for the word: {{Front}}';
-        // reference: https://platform.openai.com/docs/api-reference/chat
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer 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'
-            },
-            body: JSON.stringify({
-                "model": "gpt-3.5-turbo",
-                "messages": [{"role": "user", "content": prompt}]
-            })
-        });
-        const data = await response.json();
-        return data.choices[0].message.content;
-    }
-
-    // getGpt3Response().then(response => {
-    //     console.log(response);
-    // });
-
-
-    document.getElementById('getGpt3').addEventListener('click', async () => {
-        document.querySelectorAll('div.word').forEach(async (div) => {
-            var rawText = div.innerText;
-            var gpt3Response = await getGpt3Response(rawText);
-            // rawText += '\n\n' + "gpt3Response";
-            rawText += '\n\n' + gpt3Response;
-            div.innerText = rawText;
-        });
-    }); 
-
-    document.querySelectorAll('div.word').forEach(async (div) => {
-        var rawText = div.innerText;
-        var gpt3Response = await getGpt3Response(rawText);
-        // rawText += '\n\n' + "gpt3Response";
-        rawText += '\n\n' + gpt3Response;
-        div.innerText = rawText;
+  async function getCompletionFromMessage(messages) {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer sk-",
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: messages,
+      }),
     });
+    const data = await response.json();
+    return data.choices[0].message.content;
+  } 
+
+  async function main() {
+    var word = "{{Front}}";
+    var prompt;
+    var messages = [];
+    var response;
+
+    prompt = `Make a sentence using this English word "${word}". If the word has more than one common meaning, please make a sentence for each of the top two most prevalent meanings. Present your responses in JSON format, using 'sentences' as the key.`;
+    messages.push({ role: "user", content: prompt })
+    response = await getCompletionFromMessage(messages);
+    var sentences = JSON.parse(response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1));
+    console.log("sentences: " + sentences);
+    document.getElementById("sentences").innerText = sentences.sentences.join("\n\n");
+
+    prompt = `Translate the sentences from English to Chinese. Output your translations in JSON format, using 'translations' as the key and a list of your translated sentences as the corresponding value.`;
+    messages.push({ role: "assistant", content: response});
+    messages.push({ role: "user", content: prompt});
+    response = await getCompletionFromMessage(messages);
+    var translations = JSON.parse(response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1));
+    console.log("translations: " + translations);
+
+    var clickEvent = () => {
+      var combined = [];
+      for(let i = 0; i < sentences.sentences.length; i++){
+        combined.push(sentences.sentences[i]);
+        combined.push(translations.translations[i]);
+      }
+      document.getElementById("sentences").innerText = combined.join("\n\n");
+      document.getElementById("button").remove();
+    };
+
+    document.getElementById("button").addEventListener("click", clickEvent);
+  }
+
+  // Call the main function to start
+  main();
+
 </script>
