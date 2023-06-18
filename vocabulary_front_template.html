@@ -34,18 +34,26 @@
     prompt = `Make a sentence using this English word "${word}". If the word has more than one common meaning, please make a sentence for each of the top two most prevalent meanings. Present your responses in JSON format, using 'sentences' as the key.`;
     messages.push({ role: "user", content: prompt })
     response = await getCompletionFromMessage(messages);
-    var sentences = JSON.parse(response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1));
-    console.log("sentences: " + sentences);
+    var sentences_json_string = response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1)
+    console.log("sentences: " + sentences_json_string);
+    var sentences = JSON.parse(sentences_json_string);
+    if (document.getElementById("word").innerText != word) { // check whether the same card, due to async
+      return;
+    }
     document.getElementById("sentences").innerText = sentences.sentences.join("\n\n");
 
     prompt = `Translate the sentences from English to Chinese. Output your translations in JSON format, using 'translations' as the key and a list of your translated sentences as the corresponding value.`;
     messages.push({ role: "assistant", content: response});
     messages.push({ role: "user", content: prompt});
     response = await getCompletionFromMessage(messages);
-    var translations = JSON.parse(response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1));
-    console.log("translations: " + translations);
+    var translations_json_string = response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1)
+    console.log("translations: " + translations_json_string);
+    var translations = JSON.parse(translations_json_string);
 
     var clickEvent = () => {
+      if (document.getElementById("word").innerText != word) {
+        return;
+      }
       var combined = [];
       for(let i = 0; i < sentences.sentences.length; i++){
         combined.push(sentences.sentences[i]);
