@@ -36,12 +36,12 @@ Do not use any special punctuation to highlight these keywords in your responce.
 # The story should be drawn from or inspired by books and literature.
 # keep the story as short as possible
     messages = [{"role": "user", "content": prompt}]
-    respond = get_completion(messages)
-#     respond = """
-# Be careful not to directly call any Qt/UI routines inside the background operation!
-# If you need to modify the UI after an operation completes (eg show a tooltip), you should do it from the success function.
-# If the operation needs data from the UI (eg a combo box value), that data should be gathered prior to executing the operation.
-# If you need to update the UI during the background operation (eg to update the text of the progress window), your operation needs to perform that update on the main thread. For example, in a loop:
-# """
+    # respond = get_completion(messages)
+    respond = """
+Be careful not to directly call any Qt/UI routines inside the background operation!
+If you need to modify the UI after an operation completes (eg show a tooltip), you should do it from the success function.
+If the operation needs data from the UI (eg a combo box value), that data should be gathered prior to executing the operation.
+If you need to update the UI during the background operation (eg to update the text of the progress window), your operation needs to perform that update on the main thread. For example, in a loop:
+"""
     return respond
 

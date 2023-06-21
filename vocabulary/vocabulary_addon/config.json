@@ -1,5 +1,5 @@
 {
-    "OPENAI_API_KEY": "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",
+    "OPENAI_API_KEY": "sk-",
     "TARGET_DECK": "English Vocabulary",
-    "COMPOSE_MAX_WORDS": 400
+    "FONT_SIZE": 20
 }
