@@ -1,6 +1,6 @@
 <div id="word" style="margin-bottom: 30px;">{{Front}}</div>
 
-<div id="sentences" style="margin-bottom: 30px;"></div>
+<div id="sentences" style="margin-bottom: 30px; background-color:#D3A3A9;"></div>
 
 <div>
   <button id="button" style="width: 80vw; height: 50px;">
@@ -23,7 +23,20 @@
     });
     const data = await response.json();
     return data.choices[0].message.content;
-  } 
+  }
+
+  function speech(text) {
+    // var msg = new SpeechSynthesisUtterance();
+    // // var voices = window.speechSynthesis.getVoices();
+    // // msg.voice = voices[10]; 
+    // msg.voice = window.speechSynthesis.getVoices()[109];
+    // // msg.volume = 1; // From 0 to 1
+    // msg.rate = 0.9; // From 0.1 to 10
+    // // msg.pitch = 2; // From 0 to 2
+    // msg.text = text;
+    // // msg.lang = 'en';
+    // speechSynthesis.speak(msg);
+  }
 
   async function main() {
     var word = "{{Front}}";
@@ -41,6 +54,12 @@
       return;
     }
     document.getElementById("sentences").innerText = sentences.sentences.join("\n\n");
+    for (let i = 0; i < sentences.sentences.length; i++) {
+      speech(sentences.sentences[i]);
+      if (i < sentences.sentences.length - 1) {
+        await new Promise(r => setTimeout(r, 2000));
+      }
+    }
 
     prompt = `Translate the sentences from English to Chinese. Output your translations in JSON format, using 'translations' as the key and a list of your translated sentences as the corresponding value.`;
     messages.push({ role: "assistant", content: response});

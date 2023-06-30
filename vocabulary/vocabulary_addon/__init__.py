@@ -18,7 +18,8 @@ def get_today_words():
     note_ids = []
     # https://docs.ankiweb.net/searching.html
     note_ids.extend(mw.col.find_notes(f"\"deck:{target_deck}\" is:due"))
-    note_ids.extend(mw.col.find_notes(f"\"deck:{target_deck}\" is:new"))
+    note_ids.extend(mw.col.find_notes(f"\"deck:{target_deck}\" is:learn"))
+    # note_ids.extend(mw.col.find_notes(f"\"deck:{target_deck}\" is:new"))
     notes = [mw.col.get_note(card_id) for card_id in note_ids]
     words = []
     for note in notes:

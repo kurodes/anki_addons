@@ -51,11 +51,12 @@ def gpt_compose_story_stream(words):
 Compose an intriguing and fluent short story, tailored for a student with a vocabulary of around 6000 English words.
 The story should seamlessly incorporates all the keywords that are delimited by triple backticks.
 The story should clearly illustrate the meaning of the keywords.
-Do not use any special punctuation to highlight these keywords in your responce.
+Wrap the keywords in your responce with single asterisk.
 ```
 {', '.join(words)}
 ```
 """
+# Do not use any special punctuation to highlight these keywords in your responce.
 # The story should be drawn from or inspired by books and literature.
 # keep the story as short as possible
     messages = [{"role": "user", "content": prompt}]

@@ -1,5 +1,6 @@
 {
-    "OPENAI_API_KEY": "sk-",
+    "OPENAI_API_KEY": "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",
     "TARGET_DECK": "English Vocabulary",
-    "FONT_SIZE": 20
+    "FONT_SIZE": 20,
+    "SPEECH_RATE_WPM": 160
 }
