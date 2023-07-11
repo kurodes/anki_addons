@@ -20,7 +20,7 @@ def get_completion_stream(messages):
     )
 
     if response.status_code != 200:
-        yield f"{response.status_code} {response.reason} {response.text}",
+        yield f"{response.status_code} {response.reason} {response.text}"
     else:
         full_response = ""
         buffer = ""
