@@ -1,6 +1,6 @@
 <div id="word" style="margin-bottom: 30px;">{{Front}}</div>
 
-<div id="sentences" style="margin-bottom: 30px; background-color:#D3A3A9;"></div>
+<div id="sentences" style="margin-bottom: 30px;"></div>
 
 <div>
   <button id="button" style="width: 80vw; height: 50px;">
@@ -54,12 +54,12 @@
       return;
     }
     document.getElementById("sentences").innerText = sentences.sentences.join("\n\n");
-    for (let i = 0; i < sentences.sentences.length; i++) {
-      speech(sentences.sentences[i]);
-      if (i < sentences.sentences.length - 1) {
-        await new Promise(r => setTimeout(r, 2000));
-      }
-    }
+    // for (let i = 0; i < sentences.sentences.length; i++) {
+    //   speech(sentences.sentences[i]);
+    //   if (i < sentences.sentences.length - 1) {
+    //     await new Promise(r => setTimeout(r, 2000));
+    //   }
+    // }
 
     prompt = `Translate the sentences from English to Chinese. Output your translations in JSON format, using 'translations' as the key and a list of your translated sentences as the corresponding value.`;
     messages.push({ role: "assistant", content: response});

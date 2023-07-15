@@ -14,13 +14,16 @@
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer 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",
+        Authorization: "Bearer sk-",
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
         messages: messages,
       }),
     });
+    if (response.status != 200) {
+      return "error";
+    }
     const data = await response.json();
     return data.choices[0].message.content;
   }
@@ -44,7 +47,7 @@
     var messages = [];
     var response;
 
-    prompt = `Make a sentence using this English word "${word}". If the word has more than one common meaning, please make a sentence for each of the top two most prevalent meanings. Present your response in a no-numbered list, with each sentence on a new line.`;
+    prompt = `Make a sentence using this English word "${word}". If the word has more than one common meaning, please make a sentence for each of the top two most prevalent meanings. Present your response in a list without bullets or numbers, with each sentence on a new line.`;
     messages.push({ role: "user", content: prompt })
     response = await getCompletionFromMessage(messages);
     console.log("sentences: " + response);
@@ -60,7 +63,7 @@
     //   }
     // }
 
-    prompt = `Translate the sentences from English to Chinese. Present your response in a no-numbered list, with each translation on a new line.`;
+    prompt = `Translate the sentences from English to Chinese. Present your response in a list without bullets or numbers, with each translation on a new line.`;
     messages.push({ role: "assistant", content: response});
     messages.push({ role: "user", content: prompt});
     response = await getCompletionFromMessage(messages);

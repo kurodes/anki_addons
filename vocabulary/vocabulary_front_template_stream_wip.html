@@ -1,0 +1,137 @@
+<div id="word" style="margin-bottom: 30px;">{{Front}}</div>
+
+<div id="sentences" style="margin-bottom: 30px;"></div>
+
+<div>
+  <button id="button" style="width: 80vw; height: 50px;">
+    Show Translation
+  </button>
+</div>
+
+<script>
+  async function getCompletionFromMessage(messages) {
+    const API_KEY = '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'
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: messages,
+      }),
+    });
+    const data = await response.json();
+    return data.choices[0].message.content;
+  }
+
+  async function* streamCompletionFromMessage(messages) {
+    const API_KEY = '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'
+    // console.log("Starting fetch request...");
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: messages,
+        stream: true,
+      }),
+      stream: true,
+    });
+
+    // console.log("Fetching done, starting to read the stream...");
+    const reader = response.body?.pipeThrough(new TextDecoderStream()).getReader();
+    if (!reader) {
+      // console.log("No reader available, exiting...");
+      return;
+    }
+
+    while (true) {
+      // console.log("Reading from the stream...");
+      const { value, done } = await reader.read();
+      if (done) {
+        // console.log("Done reading from the stream, exiting...");
+        break;
+      }
+
+      let dataDone = false;
+      const arr = value.split("\n");
+      for (let data of arr) {
+        if (data.length === 0) break; // ignore empty message
+        if (data.startsWith(":")) break; // ignore sse (server-sent events) comment message
+        if (data === "data: [DONE]") {
+          dataDone = true;
+          break;
+        }
+        const json_str = JSON.parse(data.substring(6));
+        const delta = json_str["choices"][0]["delta"]["content"];
+        yield delta;
+      }
+      if (dataDone) break;
+    }
+  }
+
+
+  async function main() {
+    var word = "{{Front}}";
+    var prompt;
+    var messages = [];
+    var response;
+
+    // prompt = `Make a sentence using this English word "${word}". If the word has more than one common meaning, please make a sentence for each of the top two most prevalent meanings. Present your responses in JSON format, using 'sentences' as the key.`;
+    // messages.push({ role: "user", content: prompt })
+    // response = await getCompletionFromMessage(messages);
+    // var sentences_json_string = response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1)
+    // console.log("sentences: " + sentences_json_string);
+    // var sentences = JSON.parse(sentences_json_string);
+    // if (document.getElementById("word").innerText != word) { // check whether the same card, due to async
+    //   return;
+    // }
+    // document.getElementById("sentences").innerText = sentences.sentences.join("\n\n");
+
+    prompt = `Make a sentence using this English word "${word}". If the word has more than one common meaning, please make a sentence for each of the top two most prevalent meanings. Present your responses in a numbered list, with each sentence on a new line.`;
+    messages.push({ role: "user", content: prompt });
+    async function printDeltas() {
+      for await (const delta of streamCompletionFromMessage(messages)) {
+        console.log(delta);
+        // if (document.getElementById("word").innerText != word) { // check whether the same card, due to async
+        //   return;
+        // }
+        document.getElementById("sentences").innerText += delta;
+      }
+    }
+    printDeltas();
+
+
+    // prompt = `Translate the sentences from English to Chinese. Output your translations in JSON format, using 'translations' as the key and a list of your translated sentences as the corresponding value.`;
+    // messages.push({ role: "assistant", content: response });
+    // messages.push({ role: "user", content: prompt });
+    // response = await getCompletionFromMessage(messages);
+    // var translations_json_string = response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1)
+    // console.log("translations: " + translations_json_string);
+    // var translations = JSON.parse(translations_json_string);
+
+    // var clickEvent = () => {
+    //   if (document.getElementById("word").innerText != word) {
+    //     return;
+    //   }
+    //   var combined = [];
+    //   for (let i = 0; i < sentences.sentences.length; i++) {
+    //     combined.push(sentences.sentences[i]);
+    //     combined.push(translations.translations[i]);
+    //   }
+    //   document.getElementById("sentences").innerText = combined.join("\n\n");
+    //   document.getElementById("button").remove();
+    // };
+
+    // document.getElementById("button").addEventListener("click", clickEvent);
+  }
+
+  // Call the main function to start
+  main();
+
+</script>

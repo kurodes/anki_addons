@@ -26,6 +26,7 @@ class StoryDialog(QDialog):
         self.read_pos = 0
         self.is_playing = True
         self.closing = False
+        self.say_proc = None
         self.setup_window()
         # self.show_story()
         self.show_story_streamed()
@@ -76,7 +77,8 @@ class StoryDialog(QDialog):
 
     def close(self):
         self.closing = True
-        self.say_proc.send_signal(signal.SIGINT)
+        if self.say_proc:
+            self.say_proc.send_signal(signal.SIGINT)
         saveGeom(self, "composed articles")
         self.reject()
 
@@ -145,7 +147,8 @@ class StoryDialog(QDialog):
         return html
 
     def toggle_play(self):
-        self.say_proc.send_signal(signal.SIGINT)
+        if self.say_proc:
+            self.say_proc.send_signal(signal.SIGINT)
         self.is_playing = not self.is_playing
         if self.is_playing:
             self.pause_play_button.setText("Pause")
@@ -153,17 +156,20 @@ class StoryDialog(QDialog):
             self.pause_play_button.setText("Play")
     
     def prev_play(self):
-        self.say_proc.send_signal(signal.SIGINT)
+        if self.say_proc:
+            self.say_proc.send_signal(signal.SIGINT)
         self.read_pos -= 1
         self.highlight_read_sentence()
     
     def next_play(self):
-        self.say_proc.send_signal(signal.SIGINT)
+        if self.say_proc:
+            self.say_proc.send_signal(signal.SIGINT)
         self.read_pos += 1
         self.highlight_read_sentence()
     
     def restart_play(self):
-        self.say_proc.send_signal(signal.SIGINT)
+        if self.say_proc:
+            self.say_proc.send_signal(signal.SIGINT)
         self.read_pos = 0
         # os.system('killall say')
         self.highlight_read_sentence()

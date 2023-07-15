@@ -15,7 +15,6 @@ def get_completion(messages):
             "messages": messages,
         }),
     )
-    data = response.json()
     if response.status_code != 200:
         err = f"{response.status_code} {response.reason} {response.text}"
         print(err)
