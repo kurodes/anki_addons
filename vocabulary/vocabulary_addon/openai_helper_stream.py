@@ -5,6 +5,9 @@ from time import sleep
 
 def get_completion_stream(messages):
     openai_api_key = mw.addonManager.getConfig(__name__)['OPENAI_API_KEY']
+    model_name = "gpt-3.5-turbo"
+    if mw.addonManager.getConfig(__name__)['ENABLE_GPT_4'] == 4:
+        model_name = "gpt-4"
     response = requests.post(
         "https://api.openai.com/v1/chat/completions",
         headers={
@@ -12,7 +15,7 @@ def get_completion_stream(messages):
             "Authorization": f"Bearer {openai_api_key}"
         },
         data=json.dumps({
-            "model": "gpt-3.5-turbo",
+            "model": model_name,
             # "model": "gpt-4",
             "messages": messages,
             "stream": True
@@ -49,7 +52,7 @@ def dummy_stream():
 
 def gpt_compose_story_stream(words):
     prompt = f"""
-Compose an intriguing and fluent short story, tailored for a student with a vocabulary of around 6000 English words.
+Compose an intriguing and fluent short story, tailored for a student with a vocabulary of around 5000 English words.
 The story should seamlessly incorporates all the keywords that are delimited by triple backticks.
 The story should clearly illustrate the meaning of the keywords.
 Wrap the keywords in your responce with single asterisk.
