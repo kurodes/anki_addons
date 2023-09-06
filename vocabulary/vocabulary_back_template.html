@@ -1,0 +1,11 @@
+<div id="word" style="margin-bottom: 30px;">{{Front}}</div>
+
+<div id="sentences" style="margin-bottom: 30px;"></div>
+
+<hr id=answer>
+
+<div style="text-align: left;"> {{Back}} </div>
+
+<script>
+  document.getElementById("sentences").innerText = localStorage.getItem("front_text");
+</script>

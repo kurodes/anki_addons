@@ -56,6 +56,7 @@
       return;
     }
     document.getElementById("sentences").innerText = sentences.join("\n\n");
+    localStorage.setItem("front_text", sentences.join("\n\n"));
     // for (let i = 0; i < sentences.length; i++) {
     //   speech(sentences[i]);
     //   if (i < sentences.length - 1) {
@@ -69,15 +70,16 @@
     response = await getCompletionFromMessage(messages);
     console.log("translations: " + response);
     var translations = response.split("\n");
+    var combined = [];
+    for(let i = 0; i < sentences.length; i++){
+      combined.push(sentences[i]);
+      combined.push(translations[i]);
+    }
+    localStorage.setItem("front_text", combined.join("\n\n"));
 
     var clickEvent = () => {
       if (document.getElementById("word").innerText != word) {
         return;
-      }
-      var combined = [];
-      for(let i = 0; i < sentences.length; i++){
-        combined.push(sentences[i]);
-        combined.push(translations[i]);
       }
       document.getElementById("sentences").innerText = combined.join("\n\n");
       document.getElementById("button").remove();
