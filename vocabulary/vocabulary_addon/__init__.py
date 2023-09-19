@@ -11,6 +11,8 @@ from aqt.operations import QueryOp
 
 from .story_dialog import StoryDialog
 
+from .init_deck_model import InitDeckModel
+
 target_deck = mw.addonManager.getConfig(__name__)['TARGET_DECK']
 
 def get_today_words():
@@ -46,5 +48,12 @@ def add_overview_button(link_handler, links):
             op.with_progress().run_in_background()
         return link_handler(url=url)
     return custom_link_handler
+
+def init_deck_model():
+    initiator = InitDeckModel()
+    initiator.init()
+
+# init deck, card type and template each time anki is started
+gui_hooks.main_window_did_init.append(init_deck_model)
 
 gui_hooks.overview_will_render_bottom.append(add_overview_button)
