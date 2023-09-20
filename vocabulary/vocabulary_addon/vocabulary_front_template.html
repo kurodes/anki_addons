@@ -21,7 +21,7 @@
         messages: messages,
       }),
     });
-    if (response.status != 200) {
+    if (response.status !== 200) {
       return "error";
     }
     const data = await response.json();
@@ -42,17 +42,17 @@
   }
 
   async function main() {
-    var word = "{{Front}}";
-    var prompt;
-    var messages = [];
-    var response;
+    let word = "{{Front}}";
+    let prompt;
+    let messages = [];
+    let response;
 
     prompt = `Make a sentence using this English word "${word}". If the word has more than one common meaning, please make a sentence for each of the top two most prevalent meanings. Present your response in a list without bullets or numbers, with each sentence on a new line.`;
     messages.push({ role: "user", content: prompt })
     response = await getCompletionFromMessage(messages);
     console.log("sentences: " + response);
-    var sentences = response.split("\n");
-    if (document.getElementById("word").innerText != word) { // check whether the same card, due to async
+    let sentences = response.split("\n");
+    if (document.getElementById("word").innerText !== word) { // check whether the same card, due to async
       return;
     }
     document.getElementById("sentences").innerText = sentences.join("\n\n");
@@ -69,16 +69,16 @@
     messages.push({ role: "user", content: prompt});
     response = await getCompletionFromMessage(messages);
     console.log("translations: " + response);
-    var translations = response.split("\n");
-    var combined = [];
+    let translations = response.split("\n");
+    let combined = [];
     for(let i = 0; i < sentences.length; i++){
       combined.push(sentences[i]);
       combined.push(translations[i]);
     }
     localStorage.setItem("front_text", combined.join("\n\n"));
 
-    var clickEvent = () => {
-      if (document.getElementById("word").innerText != word) {
+    let clickEvent = () => {
+      if (document.getElementById("word").innerText !== word) {
         return;
       }
       document.getElementById("sentences").innerText = combined.join("\n\n");

@@ -2,13 +2,14 @@ from aqt import mw
 import requests
 import json
 
+from .constants import *
+
 def get_completion(messages):
-    openai_api_key = mw.addonManager.getConfig(__name__)['OPENAI_API_KEY']
     response = requests.post(
         "https://api.openai.com/v1/chat/completions",
         headers={
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {openai_api_key}"
+            "Authorization": f"Bearer {OPENAI_API_KEY}"
         },
         data=json.dumps({
             "model": "gpt-3.5-turbo",

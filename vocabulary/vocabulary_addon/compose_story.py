@@ -1,23 +1,24 @@
-# import the main window object (mw) from aqt
-from aqt import mw
-from aqt import gui_hooks
-# import the "show info" tool from utils.py
-from aqt.utils import showInfo, qconnect, restoreGeom, saveGeom
-# import all of the Qt GUI library
-from aqt.qt import *
+import signal
+import subprocess
+from time import sleep
 
-from aqt.webview import AnkiWebView
+# main window object (mw)
+from aqt import mw
+# import all the Qt GUI library
+from aqt.qt import *
+# use showinfo to pop up a message
+from aqt.utils import showInfo, qconnect, restoreGeom, saveGeom
+# background op
 from aqt.operations import QueryOp
 
 # from .openai_helper import gpt_compose_story
+from .constants import *
 from .openai_helper_stream import gpt_compose_story_stream
 
-from time import sleep
-import subprocess
-import signal
 
 class StoryDialog(QDialog):
-    new_texts_ready= pyqtSignal(str)
+    new_texts_ready = pyqtSignal(str)
+
     def __init__(self, keywords, parent=None):
         super(StoryDialog, self).__init__(mw if not parent else parent)
         self.keywords = keywords
@@ -32,8 +33,8 @@ class StoryDialog(QDialog):
         self.show_story_streamed()
         QueryOp(
             parent=self,
-            op = lambda _: self.play_tts(),
-            success = lambda _:_
+            op=lambda _: self.play_tts(),
+            success=lambda _: _
         ).run_in_background()
 
     def setup_window(self):
@@ -41,14 +42,14 @@ class StoryDialog(QDialog):
         self.setLayout(self.layout)
 
         self.setWindowTitle("Composed Story")
-        self.resize(1000,800)
+        self.resize(1000, 800)
         restoreGeom(self, "composed articles")
 
         # self.web_view = AnkiWebView()
         # self.layout.addWidget(self.web_view)
         self.text_view = QTextEdit()
         self.text_view.setReadOnly(True)
-        self.text_view.setStyleSheet(f"font-size: {mw.addonManager.getConfig(__name__)['FONT_SIZE']}px; padding: 20px;")
+        self.text_view.setStyleSheet(f"font-size: {FONT_SIZE}px; padding: 20px;")
         self.layout.addWidget(self.text_view)
 
         # Add the controls for sound playing
@@ -86,7 +87,8 @@ class StoryDialog(QDialog):
         QueryOp(
             parent=self,
             op=lambda _: self.emit_streamed_text(),
-            success=lambda _: self.show_streamed_text(f'<br><div style="text-align: center;">--- Article Words: {len(self.full_story.split())};   Reviewed Words: {len(self.keywords)} ---</div>')
+            success=lambda _: self.show_streamed_text(
+                f'<br><div style="text-align: center;">--- Article Words: {len(self.full_story.split())};   Reviewed Words: {len(self.keywords)} ---</div>')
         ).run_in_background()
 
     def emit_streamed_text(self):
@@ -98,7 +100,7 @@ class StoryDialog(QDialog):
             self.new_texts_ready.emit(delta)
             # mw.taskman.run_on_main(lambda: self.new_texts_ready.emit(delta))
             if "." in delta:
-                self.sentence_pos.append(self.full_story.rindex('.')+1)
+                self.sentence_pos.append(self.full_story.rindex('.') + 1)
                 # pos = sentence_buffer.rindex('.')
                 # sentence, sentence_buffer = sentence_buffer[:pos+1], sentence_buffer[pos+1:]
                 # self.new_texts_ready.emit(sentence)
@@ -154,30 +156,31 @@ class StoryDialog(QDialog):
             self.pause_play_button.setText("Pause")
         else:
             self.pause_play_button.setText("Play")
-    
+
     def prev_play(self):
         if self.say_proc:
             self.say_proc.send_signal(signal.SIGINT)
         self.read_pos -= 1
         self.highlight_read_sentence()
-    
+
     def next_play(self):
         if self.say_proc:
             self.say_proc.send_signal(signal.SIGINT)
         self.read_pos += 1
         self.highlight_read_sentence()
-    
+
     def restart_play(self):
         if self.say_proc:
             self.say_proc.send_signal(signal.SIGINT)
         self.read_pos = 0
         # os.system('killall say')
         self.highlight_read_sentence()
-    
+
     def highlight_read_sentence(self):
-        st, ed = self.sentence_pos[self.read_pos], self.sentence_pos[self.read_pos+1]
+        st, ed = self.sentence_pos[self.read_pos], self.sentence_pos[self.read_pos + 1]
         sentence = self.full_story[st:ed]
-        html_story = self.full_story[:st]+'<span style="background-color:#008B8B;">'+sentence+'</span>'+self.full_story[ed:]
+        html_story = self.full_story[
+                     :st] + '<span style="background-color:#008B8B;">' + sentence + '</span>' + self.full_story[ed:]
         html_story = html_story.replace('\n', '<br>')
         for word in self.keywords:
             html_story = html_story.replace(word, f'<span style="color: #FFFFFF;">{word}</span>')
@@ -186,17 +189,50 @@ class StoryDialog(QDialog):
         self.text_view.verticalScrollBar().setValue(scroll_pos)
 
     def play_tts(self):
-        rate = mw.addonManager.getConfig(__name__)['SPEECH_RATE_WPM']
         while True:
             if self.closing:
                 break
             if self.is_playing:
                 if len(self.sentence_pos) > self.read_pos + 1:
                     mw.taskman.run_on_main(self.highlight_read_sentence)
-                    sentence = self.full_story[self.sentence_pos[self.read_pos]:self.sentence_pos[self.read_pos+1]]
-                    # os.system(f'say -r {rate} "{sentence}"')
-                    self.say_proc = subprocess.Popen(['say', '-r', str(rate), sentence])
+                    sentence = self.full_story[self.sentence_pos[self.read_pos]:self.sentence_pos[self.read_pos + 1]]
+                    # os.system(f'say -r {SPEECH_RATE_WPM} "{sentence}"')
+                    self.say_proc = subprocess.Popen(['say', '-r', str(SPEECH_RATE_WPM), sentence])
                     ret_code = self.say_proc.wait()
                     if ret_code == 0:
                         self.read_pos += 1
             sleep(0.1)
+
+
+def get_today_words():
+    # Note is the data of the fields
+    note_ids = []
+    # https://docs.ankiweb.net/searching.html
+    note_ids.extend(mw.col.find_notes(f"\"deck:{DECK_NAME}\" is:due"))
+    note_ids.extend(mw.col.find_notes(f"\"deck:{DECK_NAME}\" is:learn"))
+    # note_ids.extend(mw.col.find_notes(f"\"deck:{DECK_NAME}\" is:new"))
+    notes = [mw.col.get_note(card_id) for card_id in note_ids]
+    words = []
+    for note in notes:
+        # fields[0], [1] refers to the text of field front, back
+        question = str(note.fields[0])
+        words.append(question)
+    return words
+
+
+def add_button_to_overview(link_handler: Callable[[str], bool], links: list[list[str]]) -> Callable[[str], bool]:
+    if mw.col.decks.current()['name'] != DECK_NAME:
+        return lambda _: False
+    links.append(['None', 'compose', 'Compose Story'])
+
+    def button_handler(url):
+        if url != 'compose':
+            return link_handler(url=url)
+        QueryOp(
+            parent=mw,
+            op=lambda _: get_today_words(),
+            success=lambda keywords: StoryDialog(keywords)
+        ).run_in_background()
+        return link_handler(url=url)
+
+    return button_handler
