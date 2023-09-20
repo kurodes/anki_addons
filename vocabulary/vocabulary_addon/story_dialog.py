@@ -9,7 +9,7 @@ from aqt.qt import *
 from aqt.webview import AnkiWebView
 from aqt.operations import QueryOp
 
-from .openai_helper import gpt_compose_story
+# from .openai_helper import gpt_compose_story
 from .openai_helper_stream import gpt_compose_story_stream
 
 from time import sleep
@@ -122,29 +122,29 @@ class StoryDialog(QDialog):
         # mw.taskman.run_on_main(append_text)
         # self.text_view.setTextCursor(cursor)  # Update the QTextEdit's cursor
 
-    def show_story(self):
-        op = QueryOp(
-            parent=self,
-            op = lambda _: gpt_compose_story(self.keywords),
-            success=self.show_text
-        )
-        op.with_progress().run_in_background()
+    # def show_story(self):
+    #     op = QueryOp(
+    #         parent=self,
+    #         op = lambda _: gpt_compose_story(self.keywords),
+    #         success=self.show_text
+    #     )
+    #     op.with_progress().run_in_background()
 
-    def show_text(self, text):
-        html_content = text
-        self.keywords.append("the")
-        for word in self.keywords:
-            # html_content = html_content.replace(word, f'<input type="checkbox" id="{word}" value="{word}"><span style="color: red;">{word}</span></input>')
-            html_content = html_content.replace(word, f'<span style="color: #FFFFFF;">{word}</span>')
-        html_content = self.get_html_outline(html_content)
-        print(html_content)
-        self.text_view.setHtml(html_content)
+    # def show_text(self, text):
+    #     html_content = text
+    #     self.keywords.append("the")
+    #     for word in self.keywords:
+    #         # html_content = html_content.replace(word, f'<input type="checkbox" id="{word}" value="{word}"><span style="color: red;">{word}</span></input>')
+    #         html_content = html_content.replace(word, f'<span style="color: #FFFFFF;">{word}</span>')
+    #     html_content = self.get_html_outline(html_content)
+    #     print(html_content)
+    #     self.text_view.setHtml(html_content)
 
-    def get_html_outline(self, article):
-        body = "<p>" + article.replace("\n", "</p><p>") + "</p>"
-        body += f'<p><div style="text-align: center;">--- Article Words: {len(article.split())};   Reviewed Words: {len(self.keywords)} ---</div></p>'
-        html = "<html><body>" + body +"</body></html>"
-        return html
+    # def get_html_outline(self, article):
+    #     body = "<p>" + article.replace("\n", "</p><p>") + "</p>"
+    #     body += f'<p><div style="text-align: center;">--- Article Words: {len(article.split())};   Reviewed Words: {len(self.keywords)} ---</div></p>'
+    #     html = "<html><body>" + body +"</body></html>"
+    #     return html
 
     def toggle_play(self):
         if self.say_proc:

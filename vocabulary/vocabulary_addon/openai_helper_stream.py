@@ -68,3 +68,19 @@ Wrap the keywords in your responce with single asterisk.
     # respond = dummy_stream()
     return respond
 
+def gpt_explain_vocabulary(vocabulary):
+    prompt = f"""
+作为一个英语单词学习专家，你的任务是帮助我深入地学习和记忆英文单词。我想要学习的单词是{vocabulary}，你需要以以下格式指导我：
+
+单词：（我给出的单词）[单词的美式发音]
+词族：单词的所有变体
+意思：解释这个单词的常见意思，包括任何重要的同义词或反义词。
+例句：提供至少两个使用这个单词的例句和翻译，尽可能选择不同的语境来帮助我理解它的多种用法。
+记忆：根据这个单词的含义、拼写、音标等，给出一些创新的记忆技巧，例如联想法、故事法、词根词缀法等。
+
+记住，你的目标是帮助我不仅记住这个单词，而且理解其在实际语境中的应用。
+"""
+    message = [{"role": "user", "content": prompt}]
+    respond = get_completion_stream(message)
+    # respond = dummy_stream()
+    return respond 
