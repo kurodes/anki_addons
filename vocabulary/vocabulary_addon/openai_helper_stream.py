@@ -6,7 +6,7 @@ from aqt import mw
 
 from .constants import *
 
-def get_completion_stream(messages):
+def get_completion_stream(messages, allow_break_words=False):
     model_name = "gpt-3.5-turbo"
     if ENABLE_GPT_4 == True:
         model_name = "gpt-4"
@@ -39,13 +39,15 @@ def get_completion_stream(messages):
                     yield buffer
                 break
             delta_content = resp_dict["choices"][0]["delta"]["content"]
-            full_response += delta_content
-            buffer += delta_content
-            # prevent splitting inside a word
-            if ' ' in buffer:
-                pos = buffer.rindex(' ')
-                ret, buffer = buffer[:pos + 1], buffer[pos + 1:]
-                yield ret
+            if allow_break_words:
+                yield delta_content
+            else:
+                full_response += delta_content
+                buffer += delta_content
+                if ' ' in buffer:
+                    pos = buffer.rindex(' ')
+                    ret_content, buffer = buffer[:pos + 1], buffer[pos + 1:]
+                    yield ret_content
 
 
 def dummy_stream():
@@ -84,6 +86,6 @@ def gpt_explain_word_stream(vocabulary):
 6.关联：列出单词的近义词、反义词，和它们的含义
 """
     message = [{"role": "user", "content": prompt}]
-    respond = get_completion_stream(message)
+    respond = get_completion_stream(message, allow_break_words=True)
     # respond = dummy_stream()
     return respond

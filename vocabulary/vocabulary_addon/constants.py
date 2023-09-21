@@ -17,4 +17,4 @@ ENABLE_GPT_4 = mw.addonManager.getConfig(__name__)['ENABLE_GPT_4']
 COMPOSE_FONT_SIZE = mw.addonManager.getConfig(__name__)['COMPOSE_FONT_SIZE']
 SPEECH_RATE_WPM = mw.addonManager.getConfig(__name__)['SPEECH_RATE_WPM']
 
-SHORTCUT_EXPLAIN_WORD = 'Ctrl+G'
+SHORTCUT_EXPLAIN_WORD = mw.addonManager.getConfig(__name__)['SHORTCUT_EXPLAIN_WORD']

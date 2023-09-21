@@ -51,6 +51,6 @@ def add_button_to_editor(buttons: list[str], ed: editor.Editor):
     buttons.append(button)
     return button
 
-# def add_shortcut_to_editor_button(shortcuts: list[tuple], editor: editor.Editor):
+# def add_shortcut_to_editor_button(shortcuts: list[tuple], ed: editor.Editor):
 #     print("Shortcut added")
-#     shortcuts.append((SHORTCUT_EXPLAIN_WORD, lambda editor=editor: explain_word(editor), True))
+#     shortcuts.append((SHORTCUT_EXPLAIN_WORD, lambda ed=ed: explain_word(ed)))
