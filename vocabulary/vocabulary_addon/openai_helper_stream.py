@@ -58,8 +58,10 @@ def dummy_stream():
 
 def gpt_compose_story_stream(words):
     prompt = f"""
-As an English language tutor, your task is to create a short article specifically designed to help junior high school students learn English vocabulary. Your article should incorporate a set of provided vocabulary words and seamlessly integrate them into the context. It's important to clearly illustrate the meaning of each vocabulary word within the story's context, making it easier for students to understand and remember their definitions.
-The vocabulary words are delimited by triple backticks below. In your response, wrap these vocabulary words with a single asterisk.
+Compose a fluent short article, tailored for a junior high school students to learn English vocabulary.
+Your article should incorporate a set of provided vocabulary words, which are delimited by triple backticks in below.
+Your article should enable students to infer the meaning of these words through the context.
+In your response, wrap these vocabulary words with a single asterisk.
 ```
 {', '.join(words)}
 ```
