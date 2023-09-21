@@ -49,7 +49,7 @@ class StoryDialog(QDialog):
         # self.layout.addWidget(self.web_view)
         self.text_view = QTextEdit()
         self.text_view.setReadOnly(True)
-        self.text_view.setStyleSheet(f"font-size: {FONT_SIZE}px; padding: 20px;")
+        self.text_view.setStyleSheet(f"font-size: {COMPOSE_FONT_SIZE}px; padding: 20px;")
         self.layout.addWidget(self.text_view)
 
         # Add the controls for sound playing

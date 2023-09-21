@@ -2,17 +2,29 @@ from aqt import mw, editor
 from aqt.operations import QueryOp
 
 from .constants import *
-from .openai_helper_stream import gpt_explain_vocabulary_stream
+from .openai_helper_stream import gpt_explain_word_stream
 
+import os
 
-def explain_vocabulary(ed: editor.Editor):
+def explain_word(ed: editor.Editor):
     # if ed.note.note_type()["name"] == NOTE_TYPE_NAME and mw.col.decks.current()['name'] == DECK_NAME: 
     #     showInfo("note type is correct, allow run gpt")
     vocabulary = ed.note.fields[0]
     print(f"get vocabulary: {vocabulary}")
 
     def editor_stream_note():
-        respond = gpt_explain_vocabulary_stream(vocabulary)
+        respond = gpt_explain_word_stream(vocabulary)
+        os.system(f"""
+APP_BUNDLE_ID=com.eusoft.eudic
+open -b $APP_BUNDLE_ID
+open -b $APP_BUNDLE_ID
+osascript <<EOD
+    tell application id "$APP_BUNDLE_ID"
+        activate
+        show dic with word "{vocabulary}"
+    end tell
+EOD
+""")
         for delta in respond:
             html_delta = delta.replace('\n', '<br>')
             ed.note.fields[1] += html_delta
@@ -31,10 +43,14 @@ def add_button_to_editor(buttons: list[str], ed: editor.Editor):
     # if mw.col.decks.current()['name'] != DECK_NAME:
     button = ed.addButton(
         icon=ICON_PATH,
-        cmd="GPT-4",
-        func=explain_vocabulary,
-        tip="Explain by GPT-4",
-        keys="No shortcut"
+        cmd="explain_word_button", # innder index: cmd -> func
+        func=explain_word,
+        tip=f"Learn With GPT-4 ({SHORTCUT_EXPLAIN_WORD})",
+        keys=SHORTCUT_EXPLAIN_WORD # add shortcut
     )
     buttons.append(button)
     return button
+
+# def add_shortcut_to_editor_button(shortcuts: list[tuple], editor: editor.Editor):
+#     print("Shortcut added")
+#     shortcuts.append((SHORTCUT_EXPLAIN_WORD, lambda editor=editor: explain_word(editor), True))

@@ -73,7 +73,7 @@ Wrap the keywords in your response with single asterisk.
     return respond
 
 
-def gpt_explain_vocabulary_stream(vocabulary):
+def gpt_explain_word_stream(vocabulary):
     prompt = f"""
 你是一个英语专家，你的任务是帮助中文母语的学生学习英文单词。你需要一步步地完成下面的步骤，来帮助学生全面的学习{vocabulary}这个单词：
 1.单词：单词 [标准的美式发音]
