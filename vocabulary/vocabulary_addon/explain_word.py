@@ -1,5 +1,6 @@
 from aqt import mw, editor
 from aqt.operations import QueryOp
+from aqt.utils import showInfo
 
 from .constants import *
 from .openai_helper_stream import gpt_explain_word_stream
@@ -12,12 +13,16 @@ def explain_word(ed: editor.Editor):
     vocabulary = ed.note.fields[0]
     print(f"get vocabulary: {vocabulary}")
 
+    if not vocabulary:
+        showInfo("Empty word")
+        return
+
     def editor_stream_note():
         respond = gpt_explain_word_stream(vocabulary)
         os.system(f"""
 APP_BUNDLE_ID=com.eusoft.eudic
 open -b $APP_BUNDLE_ID
-open -b $APP_BUNDLE_ID
+delay 0.5
 osascript <<EOD
     tell application id "$APP_BUNDLE_ID"
         activate
@@ -27,6 +32,8 @@ EOD
 """)
         for delta in respond:
             html_delta = delta.replace('\n', '<br>')
+            if ed.note == None:
+                return
             ed.note.fields[1] += html_delta
             mw.taskman.run_on_main(lambda: ed.loadNote())
 
