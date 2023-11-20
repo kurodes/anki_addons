@@ -9,7 +9,7 @@ from .constants import *
 def get_completion_stream(messages, allow_break_words=False):
     model_name = "gpt-3.5-turbo"
     if ENABLE_GPT_4 == True:
-        model_name = "gpt-4"
+        model_name = "gpt-4-1106-preview"
     response = requests.post(
         "https://api.openai.com/v1/chat/completions",
         headers={
@@ -79,7 +79,7 @@ def gpt_explain_word_stream(vocabulary):
     prompt = f"""
 你是一个英语专家，你的任务是帮助中文母语的学生学习英文单词。你需要一步步地完成下面的步骤，来帮助学生全面的学习{vocabulary}这个单词：
 1.单词：单词 [标准的美式发音]
-2.含义：列出单词最常见的中文含义
+2.含义与用法：列出单词最常见的中文含义，并说明使用的场景
 3.例句：为单词的每个含义提供例句及其翻译
 4.记忆：根据这个单词的拼写，采用词根词缀法等方法，给出单词的的记忆技巧
 5.词族：列出单词的词族，和它们的含义

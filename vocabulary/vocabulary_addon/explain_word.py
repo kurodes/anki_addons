@@ -32,7 +32,8 @@ EOD
 """)
         for delta in respond:
             html_delta = delta.replace('\n', '<br>')
-            if ed.note == None:
+            # editor window still open
+            if not hasattr(ed.note, 'fields'):
                 return
             ed.note.fields[1] += html_delta
             mw.taskman.run_on_main(lambda: ed.loadNote())
