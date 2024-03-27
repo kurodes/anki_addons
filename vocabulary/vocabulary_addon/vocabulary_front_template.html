@@ -52,7 +52,7 @@
     messages.push({ role: "user", content: prompt })
     response = await getCompletionFromMessage(messages);
     console.log("sentences: " + response);
-    let sentences = response.split("\n");
+    let sentences = response.split("\n").filter(sentence => sentence.trim() !== '');
     if (document.getElementById("word").innerText !== word) { // check whether the same card, due to async
       return;
     }
@@ -70,7 +70,7 @@
     messages.push({ role: "user", content: prompt});
     response = await getCompletionFromMessage(messages);
     console.log("translations: " + response);
-    let translations = response.split("\n");
+    let translations = response.split("\n").filter(sentence => sentence.trim() !== '');
     let combined = [];
     for(let i = 0; i < sentences.length; i++){
       combined.push(sentences[i]);
