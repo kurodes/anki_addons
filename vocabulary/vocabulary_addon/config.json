@@ -4,5 +4,5 @@
     "COMPOSE_FONT_SIZE": 20,
     "SPEECH_RATE_WPM": 160,
     "ENABLE_GPT_4": true,
-    "SHORTCUT_EXPLAIN_WORD": "Ctrl+S"
+    "SHORTCUT_EXPLAIN_WORD": "Ctrl+K"
 }

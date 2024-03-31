@@ -9,7 +9,7 @@ from .constants import *
 def get_completion_stream(messages, allow_break_words=False):
     model_name = "gpt-3.5-turbo"
     if ENABLE_GPT_4 == True:
-        model_name = "gpt-4-1106-preview"
+        model_name = "gpt-4-turbo-preview"
     response = requests.post(
         "https://api.openai.com/v1/chat/completions",
         headers={
