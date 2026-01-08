@@ -1,9 +1,9 @@
 from aqt import gui_hooks
 
-from .init import init_deck_model_template
+# from .init import init_deck_model_template
 from .compose_story import add_button_to_overview
-from .explain_word import add_button_to_editor
+# from .explain_word import add_button_to_editor
 
-gui_hooks.main_window_did_init.append(init_deck_model_template)
+# gui_hooks.main_window_did_init.append(init_deck_model_template)
 gui_hooks.overview_will_render_bottom.append(add_button_to_overview)
-gui_hooks.editor_did_init_buttons.append(add_button_to_editor)
+# gui_hooks.editor_did_init_buttons.append(add_button_to_editor)
