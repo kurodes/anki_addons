@@ -1,11 +1,72 @@
-<div id="word" style="margin-bottom: 30px;">{{Front}}</div>
-
-<div id="sentences" style="margin-bottom: 30px;"></div>
-
-<hr id=answer>
-
-<div style="text-align: left;"> {{Back}} </div>
+<div id="word" style="margin-bottom: 30px; text-align: center">{{Front}}</div>
+<div id="sentences" style="margin-bottom: 30px; text-align: center"></div>
+<hr id="answer" />
+<div id="answer" class="md-content">{{Back}}</div>
 
 <script>
-  document.getElementById("sentences").innerText = localStorage.getItem("front_text");
+  document.getElementById("sentences").innerText =
+    localStorage.getItem("front_text");
+
+  function addStylesheet(src, callback) {
+    var s = document.createElement("link");
+    s.rel = "stylesheet";
+    s.href = src;
+    s.onload = callback;
+    document.head.appendChild(s);
+  }
+  function addScript(src, callback) {
+    var s = document.createElement("script");
+    s.src = src;
+    s.type = "text/javascript";
+    s.onload = callback;
+    document.body.appendChild(s);
+  }
+  function replaceImage(element) {
+    var images = element.querySelectorAll("img");
+    for (var i = 0, len = images.length; i < len; i++) {
+      var img = images[i];
+      var url = new URL(img.src);
+      var src = url.pathname;
+      img.parentElement.replaceChild(
+        document.createTextNode("![](" + src + ")"),
+        img,
+      ); //+ ' =70%x*'
+    }
+  }
+  function replaceAllWhitespaceWithSpace(str) {
+    return str.replace(/[\t\v\f \u00a0\u2000-\u200b\u2028-\u2029\u3000]/g, " ");
+  }
+
+  var highlightcssUrl = "_highlight.default.min.css";
+  var showdownUrl = "_showdown.min.js";
+  addStylesheet(highlightcssUrl, function () {});
+  addScript(showdownUrl, function () {
+    var highlightjsUrl = "_highlight.min.js";
+    addScript(highlightjsUrl, function () {
+      function processShowdownDivs() {
+        var showdownConverter = new showdown.Converter();
+        showdownConverter.setFlavor("github");
+        document.querySelectorAll("div.md-content").forEach((div) => {
+          if (div && div.textContent.trim().startsWith("#")) {
+            // Render div as markdown if its content starts with '#'
+            replaceImage(div);
+            var rawText = div.innerText;
+            var classes = div.className.replace(/md-content/g, "");
+            var text = replaceAllWhitespaceWithSpace(rawText);
+            var html = showdownConverter.makeHtml(text);
+            var newDiv = document.createElement("div");
+            newDiv.innerHTML = html;
+            newDiv.className = classes;
+            newDiv.querySelectorAll("pre code").forEach((block) => {
+              hljs.highlightBlock(block);
+            });
+            div.parentNode.insertBefore(newDiv, div.nextSibling);
+            div.style.display = "none";
+          }
+        });
+      }
+
+      processShowdownDivs();
+    });
+  });
 </script>

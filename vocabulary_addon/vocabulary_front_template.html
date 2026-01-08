@@ -1,25 +1,30 @@
-<div id="word" style="margin-bottom: 30px;">{{Front}}</div>
-
-<div id="sentences" style="margin-bottom: 30px;"></div>
-
-<div>
-  <button id="button" style="width: 80vw; height: 50px;">
+<div id="word" style="margin-bottom: 30px; text-align: center">{{Front}}</div>
+<!-- AI generated example sentences -->
+<div id="sentences" style="margin-bottom: 30px; text-align: center"></div>
+<div style="text-align: center">
+  <button id="button" style="width: 80vw; height: 50px">
     Show Translation
   </button>
 </div>
 
 <script>
   async function getCompletionFromMessage(messages) {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const LLM_KEY = "sk-";
+    const LLM_URL =
+      "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
+    const LLM_MODEL = "qwen-plus";
+    // const LLM_KEY = "sk-proj-";
+    // const LLM_URL = "https://api.openai.com/v1/chat/completions";
+    // const LLM_MODEL = "gpt-5-mini";
+    const response = await fetch(LLM_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer sk-",
+        Authorization: `Bearer ${LLM_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-4-turbo-preview",
+        model: LLM_MODEL,
         messages: messages,
-        temperature: 1
       }),
     });
     if (response.status !== 200) {
@@ -29,50 +34,55 @@
     return data.choices[0].message.content;
   }
 
-  function speech(text) {
-    // var msg = new SpeechSynthesisUtterance();
-    // // var voices = window.speechSynthesis.getVoices();
-    // // msg.voice = voices[10]; 
-    // msg.voice = window.speechSynthesis.getVoices()[109];
-    // // msg.volume = 1; // From 0 to 1
-    // msg.rate = 0.9; // From 0.1 to 10
-    // // msg.pitch = 2; // From 0 to 2
-    // msg.text = text;
-    // // msg.lang = 'en';
-    // speechSynthesis.speak(msg);
-  }
-
   async function main() {
     let word = "{{Front}}";
     let prompt;
     let messages = [];
     let response;
 
-    prompt = `Make a sentence using this English word "${word}". If the word has more than one common meaning, please make a sentence for each of the top two most prevalent meanings. Present your response in a list without bullets or numbers, with each sentence on a new line.`;
-    messages.push({ role: "user", content: prompt })
+    prompt = `
+You are an English vocabulary assistant. Please generate example sentences for the word "${word}" following these strict rules:
+
+1. **Polysemy Check**: If the word has multiple common meanings, generate one sentence for the most prevalent meaning and one for the second most prevalent meaning.
+2. **Single Meaning**: If the word has only one common meaning, generate only one sentence.
+3. **Context**: Ensure the sentences are clear and demonstrate the meaning of the word effectively.
+4. **Output Format**: Output ONLY the sentences. Separate them with a newline. Do not include numbering, labels (like "Sentence 1"), or any introductory text.
+
+[Output Pattern]:
+<Sentence for meaning 1>
+<Sentence for meaning 2 (if applicable)>
+`;
+    messages.push({ role: "user", content: prompt });
     response = await getCompletionFromMessage(messages);
     console.log("sentences: " + response);
-    let sentences = response.split("\n").filter(sentence => sentence.trim() !== '');
-    if (document.getElementById("word").innerText !== word) { // check whether the same card, due to async
+    let sentences = response
+      .split("\n")
+      .filter((sentence) => sentence.trim() !== "");
+    if (document.getElementById("word").innerText !== word) {
+      // check whether the same card, due to async
       return;
     }
     document.getElementById("sentences").innerText = sentences.join("\n\n");
     localStorage.setItem("front_text", sentences.join("\n\n"));
-    // for (let i = 0; i < sentences.length; i++) {
-    //   speech(sentences[i]);
-    //   if (i < sentences.length - 1) {
-    //     await new Promise(r => setTimeout(r, 2000));
-    //   }
-    // }
 
-    prompt = `Translate the sentences from English to Chinese. Present your response in a list without bullets or numbers, with each translation on a new line.`;
-    messages.push({ role: "assistant", content: response});
-    messages.push({ role: "user", content: prompt});
+    prompt = `
+Translate the sentences from English to Chinese. 
+
+**Output Format**: Output ONLY the sentences. Separate them with a newline. Do not include numbering, labels (like "Sentence 1"), or any introductory text.
+
+[Output Pattern]:
+<Sentence for meaning 1>
+<Sentence for meaning 2 (if applicable)>
+`;
+    messages.push({ role: "assistant", content: response });
+    messages.push({ role: "user", content: prompt });
     response = await getCompletionFromMessage(messages);
     console.log("translations: " + response);
-    let translations = response.split("\n").filter(sentence => sentence.trim() !== '');
+    let translations = response
+      .split("\n")
+      .filter((sentence) => sentence.trim() !== "");
     let combined = [];
-    for(let i = 0; i < sentences.length; i++){
+    for (let i = 0; i < sentences.length; i++) {
       combined.push(sentences[i]);
       combined.push(translations[i]);
     }
@@ -91,5 +101,4 @@
 
   // Call the main function to start
   main();
-
 </script>

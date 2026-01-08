@@ -32,7 +32,8 @@
   font-weight: bold;
 }
 .section {
-  box-shadow: 0 1px 2px 0px rgba(0, 0, 0, 0.16),
+  box-shadow:
+    0 1px 2px 0px rgba(0, 0, 0, 0.16),
     0 0px 0px 1px rgba(0, 0, 0, 0.02);
   border-radius: 2px;
   margin: 8px 0 8px 0;
